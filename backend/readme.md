@@ -16,11 +16,10 @@ conda activate mal2_env
 
 ## Python
 
-### Fast API
+### Install packages
 
 ```bash
-pip install fastapi
-pip install "fastapi[standard]"
+pip install -r /backend/requirements.txt
 ```
 
 # Run Backend

@@ -1,16 +1,23 @@
+from pydantic import BaseModel, UUID4
+from typing import Optional, List
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel
 
-class Message(BaseModel):
-    id: Optional[int]
-    chat: Optional[int]
+class MessageModel(BaseModel):
+    id: Optional[UUID4]
+    timestamp: datetime
     question: str
     answer: Optional[str]
+    chat_id: UUID4
 
-class Chat(BaseModel):
-    id: Optional[int]
-    owner: Optional[int]
+    class Config:
+        from_attributes = True
+
+class ChatModel(BaseModel):
+    id: Optional[UUID4]
+    user_id: UUID4
     title: str
     last_updated: Optional[datetime]
-    messages: Optional[list[Message]]
+    messages: Optional[List[MessageModel]]
+
+    class Config:
+        from_attributes = True
