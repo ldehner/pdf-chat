@@ -1,12 +1,14 @@
-from typing import Optional
-from pydantic import BaseModel
-from enum import Enum
+from pydantic import BaseModel, UUID4
+from typing import Optional, List
 
-class Role(str, Enum):
-    customer="customer"
-    admin="admin"
+from models.chats import ChatModel
 
-class User(BaseModel):
-    id: Optional[int]
-    username: str
-    role: str
+class UserModel(BaseModel):
+    id: Optional[UUID4] = None
+    name: str
+    isAdmin: bool
+    chats: Optional[List[ChatModel]] = None
+    password: Optional[str] = None
+
+    class Config:
+        from_attributes = True
