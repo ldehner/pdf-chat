@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Path, UploadFile, File, BackgroundTasks, Response, status
+from uuid import UUID
+
+from fastapi import APIRouter, Path, UploadFile, File, BackgroundTasks, Response, status, Form
 from typing_extensions import Annotated
 from services.documents import DocumentsService
 
@@ -12,8 +14,11 @@ async def get_documents() -> list[UploadFile]:
     pass
 
 @router.post("/")
-async def create_document(background_tasks: BackgroundTasks, file: UploadFile = File(...)) -> Response:
-    document = await DocumentsService.add_document(file)
+async def create_document(background_tasks: BackgroundTasks,
+                          user_id: UUID = Form(...),
+                          file: UploadFile = File(...)) -> Response:
+
+    document = await DocumentsService.add_document(file, user_id)
     background_tasks.add_task(DocumentsService.generate_embeddings, document)
 
     return Response(

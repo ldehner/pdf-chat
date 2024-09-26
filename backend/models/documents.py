@@ -20,6 +20,7 @@ class DocumentModel(BaseModel):
         from_attributes = True
 
 class ChatDocument(BaseModel):
-    id: int
+    id: Optional[UUID4] = None
     title: str
     content: bytes
+    owner: UUID4
