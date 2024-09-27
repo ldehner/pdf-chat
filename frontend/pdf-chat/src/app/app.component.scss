@@ -1,3 +1,21 @@
+.not-authenticated-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 56px) !important;
+  width: 100vw;
+}
+#menu {
+  width: 100%;
+}
+.chat-add-button {
+  width: 100%;
+  align-self: center;
+}
+.btn-margin {
+  margin-right: 1rem;
+}
 .chat-container {
   height: calc(100vh - 56px) !important;
 }
@@ -26,4 +44,11 @@ app-chat {
   position: absolute;
   top: 10;
   right: 0;
+}
+.not-selected-chat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 56px) !important;
 }
