@@ -22,11 +22,11 @@ def register_user(user: UserModel) -> UserModel:
     finally:
         db.close()
 
-def login_user(id: UUID, password: str) -> UserModel:
+def login_user(username: str, password: str) -> UserModel:
     db: Session = SessionLocal()
     try:
         repo = UserRepository(db)
-        user = repo.get_by_id(UserEntity, id)
+        user = repo.get_by_name(username)
 
         if user is not None and user.password == password:
             return UserModel(id=user.id, name=user.name, isAdmin=user.isAdmin, chats=user.chats)
