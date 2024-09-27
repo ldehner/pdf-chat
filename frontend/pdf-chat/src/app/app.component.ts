@@ -29,25 +29,10 @@ export class AppComponent {
   public showSuccess: boolean = false;
   public loginData: LoginModel = { name: '', password: '' };
   public registerData: LoginModel = { name: '', password: '' };
-
-  public chat1: ChatModel = {
-    id: '1',
-    title: 'Chat 1',
-    messages: [],
-    last_updated: new Date(),
-    user_id: '1',
-  };
-  public chat2: ChatModel = {
-    id: '2',
-    title: 'Chat 2',
-    messages: [],
-    last_updated: new Date(),
-    user_id: '2',
-  };
-
+  private selectedFile: File | null = null;
   public newChatTitle: string = '';
   public question: string = '';
-
+  public waitingForAnswer: boolean = false;
   public activeChat: string = '';
 
   public chats: { [key: string]: string } = {
@@ -55,125 +40,7 @@ export class AppComponent {
     'Chat 2': '2',
   };
 
-  constructor(private userService: UserService) {
-    this.chat1.messages!.push({
-      id: '1',
-      chat_id: '1',
-      question: 'What is the capital of France?',
-      answer: 'Paris',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '2',
-      chat_id: '1',
-      question: 'What is the capital of Germany?',
-      answer: 'Berlin',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '3',
-      chat_id: '1',
-      question: 'What is the capital of Italy?',
-      answer: 'Rome',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '4',
-      chat_id: '1',
-      question: 'What is the capital of Netherlands?',
-      answer: 'Amsterdam',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '5',
-      chat_id: '1',
-      question: 'What is the capital of Belgium?',
-      answer: 'Brussels',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '6',
-      chat_id: '1',
-      question: 'What is the capital of Spain?',
-      answer: 'Madrid',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '7',
-      chat_id: '1',
-      question: 'What is the capital of Portugal?',
-      answer: 'Lisbon',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '8',
-      chat_id: '1',
-      question: 'What is the capital of Switzerland?',
-      answer: 'Bern',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '9',
-      chat_id: '1',
-      question: 'What is the capital of Austria?',
-      answer: 'Vienna',
-      timestamp: new Date(),
-    });
-    this.chat1.messages!.push({
-      id: '4',
-      chat_id: '1',
-      question: 'What is the capital of Russia?',
-      answer: 'Moscow',
-      timestamp: new Date(),
-    });
-    this.chat2.messages!.push({
-      id: '1',
-      chat_id: '2',
-      question: 'What are the federal states of Germany?',
-      answer:
-        'Bavaria, Berlin, Brandenburg, Bremen, Hamburg, Hesse, Lower Saxony, Mecklenburg-Vorpommern, North Rhine-Westphalia, Rhineland-Palatinate, Saarland, Saxony, Saxony-Anhalt, Schleswig-Holstein, Thuringia',
-      timestamp: new Date(),
-    });
-    this.chat2.messages!.push({
-      id: '2',
-      chat_id: '2',
-      question: 'What are the federal states of Austria?',
-      answer:
-        'Burgenland, Carinthia, Lower Austria, Upper Austria, Salzburg, Styria, Tyrol, Vorarlberg, Vienna',
-      timestamp: new Date(),
-    });
-    this.chat2.messages!.push({
-      id: '3',
-      chat_id: '2',
-      question: 'What are the federal states of Switzerland?',
-      answer:
-        'Aargau, Appenzell Ausserrhoden, Appenzell Innerrhoden, Basel-Landschaft, Basel-Stadt, Bern, Fribourg, Geneva, Glarus, Graubünden, Jura, Lucerne, Neuchâtel, Nidwalden, Obwalden, Schaffhausen, Schwyz, Solothurn, St. Gallen, Thurgau, Ticino, Uri, Valais, Vaud, Zug, Zürich',
-      timestamp: new Date(),
-    });
-    this.chat2.messages!.push({
-      id: '4',
-      chat_id: '2',
-      question: 'What are the federal states of Italy?',
-      answer:
-        'Abruzzo, Aosta Valley, Apulia, Basilicata, Calabria, Campania, Emilia-Romagna, Friuli-Venezia Giulia, Lazio, Liguria, Lombardy, Marche, Molise, Piedmont, Sardinia, Sicily, Trentino-Alto Adige, Tuscany, Umbria, Veneto',
-      timestamp: new Date(),
-    });
-    this.chat2.messages!.push({
-      id: '5',
-      chat_id: '2',
-      question: 'What are the federal states of France?',
-      timestamp: new Date(),
-    });
-    this.user = {
-      id: '1',
-      name: 'admin',
-      isAdmin: true,
-      chats: [],
-      password: 'admin',
-    };
-    this.user?.chats?.push(this.chat1);
-    this.user?.chats?.push(this.chat2);
-  }
+  constructor(private userService: UserService) {}
 
   public login(): void {
     this.userService
@@ -196,10 +63,12 @@ export class AppComponent {
     this.userService.createUser(this.registerData as UserModel).subscribe({
       next: (user) => {
         this.errorMessage = null;
+        this.loginData = { name: '', password: '' };
         this.showSuccessMessage('Registration successful. Please log in.');
       },
       error: (error) => {
         this.user = null;
+        this.loginData = { name: '', password: '' };
         this.showErrorMessage('Registration failed. Please try again.');
       },
     });
@@ -229,6 +98,7 @@ export class AppComponent {
   }
 
   public addMessage(): void {
+    this.waitingForAnswer = true;
     var tmpMsg: MessageModel = {
       id: '-1',
       chat_id: this.activeChat,
@@ -243,6 +113,7 @@ export class AppComponent {
     this.userService.createMessage(this.activeChat, this.question).subscribe({
       next: (message) => {
         this.showSuccessMessage('Message added successfully.');
+        this.waitingForAnswer = false;
         this.question = '';
         this.user?.chats?.forEach((chat) => {
           if (chat.id === this.activeChat) {
@@ -252,7 +123,32 @@ export class AppComponent {
         });
       },
       error: (error) => {
+        this.waitingForAnswer = false;
         this.showErrorMessage('Could not add message. Please try again.');
+      },
+    });
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+
+  public onUpload() {
+    if (!this.selectedFile) {
+      alert('Please select a file first.');
+      return;
+    }
+    this.userService.uploadPdf(this.user?.id!, this.selectedFile).subscribe({
+      next: (success) => {
+        this.selectedFile = null;
+        this.showSuccessMessage('File uploaded successfully.');
+      },
+      error: (error) => {
+        this.selectedFile = null;
+        this.showErrorMessage('Could not upload file. Please try again.');
       },
     });
   }

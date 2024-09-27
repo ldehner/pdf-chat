@@ -36,7 +36,6 @@ export class UserService {
     chat.last_updated = new Date();
     chat.title = title;
     chat.user_id = user_id;
-    console.log(chat);
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post<ChatModel>(`${this.apiUrl}/chats`, chat, { headers });
   }
@@ -48,15 +47,29 @@ export class UserService {
       timestamp: new Date(),
       question: question,
       answer: '',
-      chat_id: chat_id
+      chat_id: chat_id,
     };
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post<any>(`${this.apiUrl}/chats/${chat_id}/messages`, message, { headers });
+    return this.http.post<any>(
+      `${this.apiUrl}/chats/${chat_id}/messages`,
+      message,
+      { headers }
+    );
   }
 
+  // Upload a pdf file
+  uploadPdf(user_id: string, file: File): Observable<boolean> {
+    const formData = new FormData();
+    formData.append('user_id', user_id);
+    formData.append('file', file, file.name);
+    return this.http.post<boolean>(`${this.apiUrl}/documents`, formData);
+  }
 
+  // Login
   login(username: string, password: string): Observable<UserModel> {
-    return this.http.get<UserModel>(`${this.apiUrl}/users/${username}/${password}`);
+    return this.http.get<UserModel>(
+      `${this.apiUrl}/users/${username}/${password}`
+    );
   }
 }
