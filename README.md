@@ -65,6 +65,7 @@ The database schema uses PostgreSQL and is designed as follows:
 ## How It Works
 
 1. **Admin Upload**: 
+   - Admin is the first user who was registered
    - Admins upload PDFs, and the system processes the PDF into smaller chunks. 
    - Embeddings (vectors) are generated for each chunk and stored in the PostgreSQL database.
 
@@ -75,6 +76,74 @@ The database schema uses PostgreSQL and is designed as follows:
 3. **Storing Chats**:
    - Each user can create multiple chat sessions. 
    - For each session, the user's questions and the system's answers are stored as individual messages.
+
+## Startup instructions
+Here is a markdown instruction on how to start the project and access the frontend:
+
+## Project Setup Instructions
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Services Overview
+This `docker-compose.yml` sets up three services:
+1. **API**: A FastAPI backend service that runs on port `8000`.
+2. **Frontend**: An Angular app served by Nginx, accessible on port `4200`.
+3. **PostgreSQL**: A PostgreSQL database using the `ankane/pgvector` image with the `pgvector` extension.
+
+### Steps to Start the Project
+
+1. **Clone the repository** (if not done already):
+   ```bash
+   git clone <your-repository-url>
+   cd <your-repository-directory>
+   ```
+
+2. **Ensure the folder structure is correct**:
+   - Backend code should be in `./backend`.
+   - Frontend Angular app should be in `./frontend/pdf-chat`.
+   - The `init.sql` file (to initialize the database) should be in `./backend/database/init.sql`.
+
+3. **Build and Start the Containers**:
+   Run the following command to build and start all the containers (backend, frontend, and database):
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   This command will:
+   - Build the FastAPI backend (`api`).
+   - Build and serve the Angular frontend (`frontend`).
+   - Start the PostgreSQL database with the `pgvector` extension.
+
+4. **Access the Frontend**:
+   Once the containers are up and running, you can access the Angular frontend via the following URL:
+
+   ```
+   http://localhost:4200
+   ```
+
+5. **Access the Backend API**:
+   You can access the FastAPI backend by visiting:
+
+   ```
+   http://localhost:8000
+   ```
+
+### Stopping the Containers
+To stop the containers, run:
+
+```bash
+docker-compose down
+```
+
+This will stop and remove all the running containers.
+
+### Notes:
+- The PostgreSQL service is configured to use the `pgvector` extension.
+- The health check ensures the API only starts after the PostgreSQL service is ready.
+
 
 ## Future Improvements
 
