@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey, TIMESTAMP, Boolean
+from sqlalchemy import Column, String, ForeignKey, TIMESTAMP, Boolean, LargeBinary
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -34,9 +34,10 @@ class DocumentEntity(Base):
     __tablename__ = 'document'
     
     id = Column(PG_UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String, nullable=False)
+    title = Column(String, nullable=False)
     user_id = Column(PG_UUID(as_uuid=True), ForeignKey('user.id'), nullable=False)
-    
+    content = Column(LargeBinary, nullable=False)
+
     user = relationship("UserEntity", back_populates="documents")
     embeddings = relationship("EmbeddingEntity", back_populates="document")
 
