@@ -1,0 +1,15 @@
+<div class="msg-wrapper">
+  @if (type === Types.Loading) {
+  <div class="msg bot">
+    <div class="typing__dot"></div>
+    <div class="typing__dot"></div>
+    <div class="typing__dot"></div>
+  </div>
+  }@else {
+  <div class="msg {{ type === Types.Question ? 'user' : 'bot' }}">
+    <p>
+      {{ message }}
+    </p>
+  </div>
+  }
+</div>
