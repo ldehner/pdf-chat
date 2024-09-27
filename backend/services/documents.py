@@ -28,7 +28,7 @@ class DocumentsService:
                     page_content= page.get_text(),
                     metadata={
                         "id": doc.id,
-                        "page_number": page.page_number
+                        "page_number": page.number
                     }
                 )
             )

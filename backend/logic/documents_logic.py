@@ -26,3 +26,19 @@ def save_document(doc: ChatDocument) -> ChatDocument:
         raise
     finally:
         db.close()
+
+def get_document(id: uuid.UUID) -> ChatDocument:
+    db: Session = SessionLocal()
+    try:
+        repo = DocumentRepository(db)
+        entity = repo.get_by_id(DocumentEntity,id)
+        return ChatDocument(id=entity.id,
+                        title=entity.title,
+                        content=entity.content,
+                        owner=entity.user_id)
+    except SQLAlchemyError as e:
+        db.rollback()
+        print(f"Error occurred: {e}")
+        raise
+    finally:
+        db.close()
