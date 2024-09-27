@@ -13,8 +13,8 @@ def register_user(user: UserModel) -> UserModel:
     db: Session = SessionLocal()
     try:
         repo = UserRepository(db)
-        existing_users = repo.get_all()
-        if len(existing_users) is 0:
+        existing_users = repo.get_all(UserEntity)
+        if len(existing_users) == 0:
             user.isAdmin = True
         entity = UserEntity(
             id=uuid.uuid4(),
