@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from database.entities import init_db
 # Define the PostgreSQL database connection string
-DATABASE_URL = "postgresql://pdf_chat_user:5uperSecr3tP%40ssw0rd!@localhost:5432/pdf_chat"
+DATABASE_URL = "postgresql://pdf_chat_user:5uperSecr3tP%40ssw0rd!@postgres:5432/pdf_chat"
 
 # Create the engine and session
 engine = create_engine(DATABASE_URL)
