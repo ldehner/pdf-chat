@@ -1,5 +1,19 @@
 services:
+  ollama:
+    image: ollama/ollama  # Use the official olama image
+    container_name: ollama
+    volumes:
+      - ./ollama/ollama:/root/.ollama
+      - ./ollama/ollama-entrypoint.sh:/entrypoint.sh
+    ports:
+      - 11434:11434 # Adjust this port as per your API needs
+    restart: always
+    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+    networks:
+      - backend-network
+
   api:
+    container_name: api
     build: ./backend
     depends_on:
       postgres:
@@ -10,6 +24,7 @@ services:
       - 8000:8000
 
   frontend:
+    container_name: frontend
     build:
       context: ./frontend/pdf-chat
     networks:
@@ -22,6 +37,7 @@ services:
       - NODE_ENV=production
 
   postgres:
+    container_name: postgres
     image: ankane/pgvector:latest
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pdf_chat_user -d pdf_chat"]

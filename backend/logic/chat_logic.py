@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from uuid import UUID
 import uuid
+from services.response import get_response
 
 
 def create_chat(chat: ChatModel) -> UserModel:
@@ -42,18 +43,19 @@ def create_chat(chat: ChatModel) -> UserModel:
 
 def create_message(id: UUID, message: MessageModel) -> MessageModel:
     # TODO call answer logic here
+    # Temporarily return the answer without context
+    response = get_response(message.question, [])
     db: Session = SessionLocal()
     try:
         repo = MessageRepository(db)
         entity = MessageEntity(
             id=uuid.uuid4(),
             chat_id=id,
-            answer="test",
+            answer=response,
             question=message.question,
             timestamp=message.timestamp,
         )
         new_message = repo.add(entity)
-        time.sleep(2)
         return MessageModel(
             id=new_message.id,
             chat_id=new_message.chat_id,
