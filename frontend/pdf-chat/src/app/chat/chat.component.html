@@ -1,0 +1,10 @@
+<div #chat class="chat">
+  @for (message of messages; track $index) {
+  <app-message
+    [message]="message.question"
+    [type]="Types.Question"
+  ></app-message>
+  @if (message.answer !== undefined) {
+  <app-message [message]="message.answer!" [type]="Types.Answer"></app-message>
+  } } @if (isTyping) {<app-message></app-message>}
+</div>

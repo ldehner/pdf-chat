@@ -22,10 +22,10 @@ async def create_user(user: UserModel) -> UserModel:
     except SQLAlchemyError as e:
         raise HTTPException(status_code=400, detail="Error occurred while creating user.")
     
-@router.get("/{id}")
-async def get_user(id: UUID, password: str) -> UserModel:
+@router.get("/{username}/{password}")
+async def login_user(username: str, password: str) -> UserModel:
     try:
-        return user_logic.login_user(id, password)
+        return user_logic.login_user(username, password)
     except HTTPException as e:
         raise HTTPException(status_code=401, detail="User unauthorized.")
     except SQLAlchemyError as e:
