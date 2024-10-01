@@ -3,10 +3,13 @@ from uuid import UUID
 import pymupdf
 from fastapi import UploadFile
 from langchain_core.documents import Document
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from models.documents import ChatDocument
 from logic import documents_logic
+from database.init_database import DATABASE_URL
 
 class DocumentsService:
 
@@ -27,14 +30,21 @@ class DocumentsService:
                 Document(
                     page_content= page.get_text(),
                     metadata={
-                        "id": doc.id,
+                        "id": str(doc.id),
                         "page_number": page.number
                     }
                 )
             )
 
         split_documents = text_splitter.split_documents(documents)
-        #TODO: Calculate embeddings and add them to Vectorstore
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        vector_store = PGVector(
+            embeddings=embeddings,
+            connection=DATABASE_URL,
+            collection_name="docs_embeddings",
+            use_jsonb=True
+        )
+        vector_store.add_documents(split_documents)
 
 
     @staticmethod
