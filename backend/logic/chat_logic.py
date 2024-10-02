@@ -1,17 +1,20 @@
 import time
 from fastapi import HTTPException
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_postgres import PGVector
 from sqlalchemy import DateTime
 from repositories.message_repository import MessageRepository
 from repositories.chat_repository import ChatRepository
 from models.chats import ChatModel, MessageModel
 from database.entities import ChatEntity, MessageEntity
 from models.users import UserModel
-from database.init_database import SessionLocal
+from database.init_database import SessionLocal, DATABASE_URL
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from uuid import UUID
 import uuid
 from services.response import get_response
+from datetime import datetime
 
 
 def create_chat(chat: ChatModel) -> UserModel:
@@ -42,9 +45,20 @@ def create_chat(chat: ChatModel) -> UserModel:
 
 
 def create_message(id: UUID, message: MessageModel) -> MessageModel:
-    # TODO call answer logic here
-    # Temporarily return the answer without context
-    response = get_response(message.question, [])
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    vector_store = PGVector(
+        embeddings=embeddings,
+        connection=DATABASE_URL,
+        collection_name="docs_embeddings",
+        use_jsonb=True
+    )
+    retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 5})
+    retrieved_docs = retriever.invoke(message.question)
+    content = []
+    for doc in retrieved_docs:
+        content.append(doc.page_content)
+
+    response = get_response(message.question, content)
     db: Session = SessionLocal()
     try:
         repo = MessageRepository(db)
@@ -53,7 +67,7 @@ def create_message(id: UUID, message: MessageModel) -> MessageModel:
             chat_id=id,
             answer=response,
             question=message.question,
-            timestamp=message.timestamp,
+            timestamp=datetime.now(),
         )
         new_message = repo.add(entity)
         return MessageModel(
