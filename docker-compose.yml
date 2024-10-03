@@ -20,6 +20,8 @@ services:
         condition: service_healthy
     networks:
       - backend-network
+    env_file:
+      -  ./backend/.env
     ports:
       - 8000:8000
 
