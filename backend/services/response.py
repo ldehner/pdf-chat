@@ -4,11 +4,12 @@ from langchain_ollama.llms import OllamaLLM
 
 
 def get_response(question: str, text_segments: List[str]) -> str:
-    template = """Question: {question}
-
-    {contexts}
-    
-    Answer: If context is given, answer only based on the context - thats very important. If context is not given, answer based on general knowledge. Answer in 1 to 5 sentences."""
+    template = """
+    You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
+    Question: {question} 
+    Context: {contexts} 
+    Answer:
+    """
 
     formatted_segments = "\n".join(
         [f"Context {i+1}: {segment}" for i, segment in enumerate(text_segments)]
