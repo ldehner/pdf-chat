@@ -110,6 +110,7 @@ export class AppComponent {
         chat.messages?.push(tmpMsg);
       }
     });
+    
     this.userService.createMessage(this.activeChat, this.question).subscribe({
       next: (message) => {
         this.showSuccessMessage('Message added successfully.');

@@ -266,7 +266,7 @@
           <li class="nav-item">
             <a
               href="#"
-              class="nav-link align-middle"
+              class="nav-link align-middle {{ activeChat === chat.id ? 'active-chat' : '' }}"
               (click)="setActiveChat(chat.id!)"
             >
               <i class="fas fa-comments"></i>
