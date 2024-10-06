@@ -14,7 +14,13 @@ def get_response(question: str, text_segments: List[str]) -> str:
         [f"Context {i+1}: {segment}" for i, segment in enumerate(text_segments)]
     )
     prompt = ChatPromptTemplate.from_template(template)
-    model = OllamaLLM(model="llama3.2:1b", base_url="ollama:11434")
+    model = OllamaLLM(model="wizardlm2:7b", base_url="ollama:11434", keep_alive=-1)
     chain = prompt | model
     result = chain.invoke({"question": question, "contexts": formatted_segments})
     return result
+
+
+def preload_model():
+    model = OllamaLLM(model="wizardlm2:7b", base_url="ollama:11434", keep_alive=-1)
+    chain = model
+    chain.invoke("")

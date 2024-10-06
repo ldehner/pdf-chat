@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from controllers import users, documents, chats
 from database.init_database import check_and_init_db
+from services.response import preload_model
 from fastapi.middleware.cors import CORSMiddleware
 
 check_and_init_db()
+
+preload_model()
 
 app = FastAPI(debug=True)
 

@@ -11,6 +11,19 @@ services:
     entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
     networks:
       - backend-network
+    healthcheck:
+      test: ollama list || exit 1
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              count: all
 
   api:
     container_name: api
@@ -18,10 +31,14 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      ollama:
+        condition: service_healthy
     networks:
       - backend-network
     ports:
       - 8000:8000
+    env_file:
+      - ./backend/.env
 
   frontend:
     container_name: frontend

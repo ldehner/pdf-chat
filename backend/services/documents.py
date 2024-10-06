@@ -3,13 +3,14 @@ from uuid import UUID
 import pymupdf
 from fastapi import UploadFile
 from langchain_core.documents import Document
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from models.documents import ChatDocument
 from logic import documents_logic
 from database.init_database import DATABASE_URL
+from langchain_ollama import OllamaEmbeddings
+
 
 class DocumentsService:
 
@@ -28,24 +29,20 @@ class DocumentsService:
         for page in content.pages():
             documents.append(
                 Document(
-                    page_content= page.get_text(),
-                    metadata={
-                        "id": str(doc.id),
-                        "page_number": page.number
-                    }
+                    page_content=page.get_text(),
+                    metadata={"id": str(doc.id), "page_number": page.number},
                 )
             )
 
         split_documents = text_splitter.split_documents(documents)
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        embeddings = OllamaEmbeddings(model="wizardlm2:7b", base_url="ollama:11434")
         vector_store = PGVector(
             embeddings=embeddings,
             connection=DATABASE_URL,
             collection_name="docs_embeddings",
-            use_jsonb=True
+            use_jsonb=True,
         )
         vector_store.add_documents(split_documents)
-
 
     @staticmethod
     async def add_document(file: UploadFile, user_id: UUID) -> ChatDocument:
