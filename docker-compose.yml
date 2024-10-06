@@ -39,8 +39,6 @@ services:
       -  ./backend/.env
     ports:
       - 8000:8000
-    env_file:
-      - ./backend/.env
 
   frontend:
     container_name: frontend
