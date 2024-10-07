@@ -1,5 +1,5 @@
 services:
-  ollama:
+  ollama: # Remove if you don't use Ollama
     image: ollama/ollama  # Use the official olama image
     container_name: ollama
     volumes:
@@ -31,7 +31,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      ollama:
+      ollama: # Remove if you don't use Ollama
         condition: service_healthy
     networks:
       - backend-network
@@ -39,6 +39,10 @@ services:
       -  ./backend/.env
     ports:
       - 8000:8000
+    environment:
+      - Model_Provider=ollama # Specify the model provider - either ollama, openai or gemini
+      - OPENAI_API_KEY=none # If you use OpenAI - Add your OpenAI API key here
+      - GOOGLE_API_KEY=none # If you use Google API - Add your Google API key here
 
   frontend:
     container_name: frontend
