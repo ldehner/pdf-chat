@@ -1,0 +1,58 @@
+# run with: docker-compose -f online-docker-compose.yml up
+services:
+  api:
+    container_name: api
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend-network
+    env_file:
+      -  ./backend/.env
+    ports:
+      - 8000:8000
+    environment:
+      - Model_Provider=gemini # Specify the model provider - either ollama, openai or gemini
+      - OPENAI_API_KEY=none # If you use OpenAI - Add your OpenAI API key here
+      - GOOGLE_API_KEY=none # If you use Google API - Add your Google API key here
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend/pdf-chat
+    networks:
+      - backend-network
+    ports:
+      - 4200:80
+    depends_on:
+      - api
+    environment:
+      - NODE_ENV=production
+
+  postgres:
+    container_name: postgres
+    image: ankane/pgvector:latest
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pdf_chat_user -d pdf_chat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend-network
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_PASSWORD=5uperSecr3tP@ssw0rd!
+      - POSTGRES_USER=pdf_chat_user
+      - POSTGRES_DB=pdf_chat
+
+networks:
+  backend-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
