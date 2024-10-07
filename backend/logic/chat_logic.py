@@ -1,6 +1,5 @@
 import time
 from fastapi import HTTPException
-from langchain_ollama import OllamaEmbeddings
 from langchain_postgres import PGVector
 from sqlalchemy import DateTime
 from repositories.message_repository import MessageRepository
@@ -15,6 +14,10 @@ from uuid import UUID
 import uuid
 from services.response import get_response
 from datetime import datetime
+from langchain_ollama import OllamaEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
+from services.model import get_embedding_model
 
 
 def create_chat(chat: ChatModel) -> UserModel:
@@ -45,7 +48,8 @@ def create_chat(chat: ChatModel) -> UserModel:
 
 
 def create_message(id: UUID, message: MessageModel) -> MessageModel:
-    embeddings = OllamaEmbeddings(model="wizardlm2:7b", base_url="ollama:11434")
+    
+    embeddings = get_embedding_model()
     vector_store = PGVector(
         embeddings=embeddings,
         connection=DATABASE_URL,

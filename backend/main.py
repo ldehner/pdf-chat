@@ -3,10 +3,12 @@ from controllers import users, documents, chats
 from database.init_database import check_and_init_db
 from services.response import preload_model
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 check_and_init_db()
 
-preload_model()
+if os.environ['Model_Provider'] == "ollama":
+    preload_model()
 
 app = FastAPI(debug=True)
 
