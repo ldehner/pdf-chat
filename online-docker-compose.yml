@@ -1,37 +1,10 @@
+# run with: docker-compose -f online-docker-compose.yml up
 services:
-  ollama: # Remove if you don't use Ollama
-    image: ollama/ollama  # Use the official olama image
-    container_name: ollama
-    volumes:
-      - ./ollama/ollama:/root/.ollama
-      - ./ollama/ollama-entrypoint.sh:/entrypoint.sh
-    ports:
-      - 11434:11434 # Adjust this port as per your API needs
-    restart: always
-    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
-    networks:
-      - backend-network
-    healthcheck:
-      test: ollama list || exit 1
-      interval: 10s
-      timeout: 30s
-      retries: 5
-      start_period: 10s
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
-              count: all
-
   api:
     container_name: api
     build: ./backend
     depends_on:
       postgres:
-        condition: service_healthy
-      ollama: # Remove if you don't use Ollama
         condition: service_healthy
     networks:
       - backend-network
@@ -40,7 +13,7 @@ services:
     ports:
       - 8000:8000
     environment:
-      - Model_Provider=ollama # Specify the model provider - either ollama, openai or gemini
+      - Model_Provider=gemini # Specify the model provider - either ollama, openai or gemini
       - OPENAI_API_KEY=none # If you use OpenAI - Add your OpenAI API key here
       - GOOGLE_API_KEY=none # If you use Google API - Add your Google API key here
 

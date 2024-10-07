@@ -5,11 +5,13 @@ from fastapi import UploadFile
 from langchain_core.documents import Document
 from langchain_postgres import PGVector
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
+from services.model import get_embedding_model
 from models.documents import ChatDocument
 from logic import documents_logic
 from database.init_database import DATABASE_URL
 from langchain_ollama import OllamaEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
 
 class DocumentsService:
@@ -35,7 +37,7 @@ class DocumentsService:
             )
 
         split_documents = text_splitter.split_documents(documents)
-        embeddings = OllamaEmbeddings(model="wizardlm2:7b", base_url="ollama:11434")
+        embeddings = get_embedding_model()
         vector_store = PGVector(
             embeddings=embeddings,
             connection=DATABASE_URL,
