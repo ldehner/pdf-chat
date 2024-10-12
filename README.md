@@ -63,7 +63,7 @@ graph TD
 
 ### Application
 
-![image.png](image.png)
+![images/image.png](images/image.png)
 
 ## Links
 
@@ -410,27 +410,27 @@ Despite this values seem to be not good for the model, we have to mentioned that
 
 The frontend is written in the JavaScript framework Angular and as CSS framework we used bootstrap. With the frontend it's possible to register a user, login, upload PDFs, create chats and ask questions in the chat. More we won't get into the frontend because it wasn't the focus of this application.
 
-![Home screen](image%201.png)
+![Home screen](images/image%201.png)
 
 Home screen
 
-![Login](image%202.png)
+![Login](images/image%202.png)
 
 Login
 
-![Register](image%203.png)
+![Register](images/image%203.png)
 
 Register
 
-![Upload](image%204.png)
+![Upload](images/image%204.png)
 
 Upload
 
-![Chat creation](image%205.png)
+![Chat creation](images/image%205.png)
 
 Chat creation
 
-![Chat](image%206.png)
+![Chat](images/image%206.png)
 
 Chat
 
